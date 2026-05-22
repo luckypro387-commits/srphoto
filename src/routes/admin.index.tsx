@@ -84,7 +84,7 @@ function AdminPage() {
 
 /* ---------------- Site settings ---------------- */
 
-const SETTING_FIELDS: { key: string; label: string; type: "text" | "textarea" | "image" | "color" }[] = [
+const SETTING_FIELDS: { key: string; label: string; type: "text" | "textarea" | "image" }[] = [
   { key: "nav_brand", label: "Navigation brand / name", type: "text" },
   { key: "site_name", label: "Site name", type: "text" },
   { key: "hero_image", label: "Hero image", type: "image" },
@@ -109,17 +109,6 @@ const SETTING_FIELDS: { key: string; label: string; type: "text" | "textarea" | 
   { key: "clients_label", label: "Clients label", type: "text" },
   { key: "clients", label: "Clients (one per line)", type: "textarea" },
   { key: "copyright", label: "Copyright text", type: "text" },
-  { key: "color_background", label: "Color · Background (hex)", type: "color" },
-  { key: "color_foreground", label: "Color · Foreground / text (hex)", type: "color" },
-  { key: "color_primary", label: "Color · Primary (hex)", type: "color" },
-  { key: "color_primary_foreground", label: "Color · Primary foreground (hex)", type: "color" },
-  { key: "color_accent", label: "Color · Accent (hex)", type: "color" },
-  { key: "color_accent_foreground", label: "Color · Accent foreground (hex)", type: "color" },
-  { key: "color_muted", label: "Color · Muted (hex)", type: "color" },
-  { key: "color_muted_foreground", label: "Color · Muted foreground (hex)", type: "color" },
-  { key: "color_border", label: "Color · Border (hex)", type: "color" },
-  { key: "color_card", label: "Color · Card background (hex)", type: "color" },
-  { key: "color_card_foreground", label: "Color · Card foreground (hex)", type: "color" },
 ];
 
 function SiteSettingsEditor() {
@@ -193,21 +182,6 @@ function SiteSettingsEditor() {
                   onChange={(e) => e.target.files?.[0] && onImageUpload(f.key, e.target.files[0])}
                 />
               </label>
-            </div>
-          ) : f.type === "color" ? (
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                value={/^#[0-9a-fA-F]{6}$/.test(values[f.key] ?? "") ? values[f.key] : "#000000"}
-                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                className="h-10 w-14 rounded border border-border bg-transparent cursor-pointer"
-              />
-              <Input
-                id={f.key}
-                value={values[f.key] ?? ""}
-                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                placeholder="#000000 (leave blank to use theme default)"
-              />
             </div>
           ) : (
             <Input
