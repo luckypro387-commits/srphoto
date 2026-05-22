@@ -190,13 +190,6 @@ function SiteSettingsEditor() {
               onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
             />
           )}
-          {false && (
-            <Input
-              id={f.key}
-              value={values[f.key] ?? ""}
-              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-            />
-          )}
         </div>
       ))}
       <Button onClick={save} disabled={busy}>{busy ? "Saving…" : "Save changes"}</Button>
