@@ -34,6 +34,8 @@ function Index() {
   const photosQ = useQuery({ queryKey: ["gallery_photos"], queryFn: fetchGalleryPhotos });
   const socialQ = useQuery({ queryKey: ["social_links"], queryFn: fetchSocialLinks });
   const indexQ = useQuery({ queryKey: ["index_entries"], queryFn: fetchIndexEntries });
+  const experiencesQ = useQuery({ queryKey: ["experiences"], queryFn: fetchExperiences });
+  const reviewsQ = useQuery({ queryKey: ["reviews"], queryFn: fetchReviews });
 
   const s = settings.data ?? {};
   const galleries: GalleryWithPhotos[] = (galleriesQ.data ?? []).map((g) => ({
