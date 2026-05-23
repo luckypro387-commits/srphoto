@@ -9,6 +9,8 @@ import {
   fetchGalleryPhotos,
   fetchSocialLinks,
   fetchIndexEntries,
+  fetchExperiences,
+  fetchReviews,
   uploadPhoto,
   type Gallery,
 } from "@/lib/content-queries";
@@ -66,16 +68,20 @@ function AdminPage() {
 
       <main className="max-w-5xl mx-auto p-6">
         <Tabs defaultValue="settings">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap h-auto">
             <TabsTrigger value="settings">Site content</TabsTrigger>
             <TabsTrigger value="galleries">Galleries</TabsTrigger>
             <TabsTrigger value="social">Social links</TabsTrigger>
             <TabsTrigger value="archive">Archive</TabsTrigger>
+            <TabsTrigger value="experience">Experience</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews</TabsTrigger>
           </TabsList>
           <TabsContent value="settings"><SiteSettingsEditor /></TabsContent>
           <TabsContent value="galleries"><GalleriesEditor /></TabsContent>
           <TabsContent value="social"><SocialLinksEditor /></TabsContent>
           <TabsContent value="archive"><ArchiveEditor /></TabsContent>
+          <TabsContent value="experience"><ExperienceEditor /></TabsContent>
+          <TabsContent value="reviews"><ReviewsEditor /></TabsContent>
         </Tabs>
       </main>
     </div>
@@ -110,6 +116,10 @@ const SETTING_FIELDS: { key: string; label: string; type: "text" | "textarea" | 
   { key: "represented_by", label: "Representation (one per line)", type: "textarea" },
   { key: "clients_label", label: "Clients label", type: "text" },
   { key: "clients", label: "Clients (one per line)", type: "textarea" },
+  { key: "experience_eyebrow", label: "Experience section eyebrow", type: "text" },
+  { key: "experience_title", label: "Experience section title", type: "text" },
+  { key: "reviews_eyebrow", label: "Reviews section eyebrow", type: "text" },
+  { key: "reviews_title", label: "Reviews section title", type: "text" },
   { key: "copyright", label: "Copyright text", type: "text" },
 ];
 
@@ -216,7 +226,7 @@ function SocialLinksEditor() {
     else qc.invalidateQueries({ queryKey: ["social_links"] });
   };
 
-  const update = async (id: string, patch: { label?: string; url?: string }) => {
+  const update = async (id: string, patch: { label?: string; url?: string; icon_url?: string }) => {
     const { error } = await supabase.from("social_links").update(patch).eq("id", id);
     if (error) toast.error(error.message);
     else qc.invalidateQueries({ queryKey: ["social_links"] });
@@ -228,10 +238,39 @@ function SocialLinksEditor() {
     else qc.invalidateQueries({ queryKey: ["social_links"] });
   };
 
+  const uploadIcon = async (id: string, file: File) => {
+    try {
+      const url = await uploadPhoto(file);
+      await update(id, { icon_url: url });
+      toast.success("Icon uploaded");
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
+
   return (
     <Card className="p-6 space-y-4">
       {links.map((l) => (
-        <div key={l.id} className="flex gap-3 items-end">
+        <div key={l.id} className="flex gap-3 items-end border-b border-border pb-4">
+          <div className="space-y-1">
+            <Label className="text-xs">Icon</Label>
+            <div className="size-12 border border-border rounded overflow-hidden bg-muted flex items-center justify-center">
+              {l.icon_url ? (
+                <img src={l.icon_url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-[9px] uppercase text-muted-foreground">{l.label.slice(0, 2)}</span>
+              )}
+            </div>
+            <label className="text-[10px] text-muted-foreground cursor-pointer hover:text-foreground inline-flex items-center gap-1">
+              <Upload className="size-3" /> Upload
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && uploadIcon(l.id, e.target.files[0])}
+              />
+            </label>
+          </div>
           <div className="flex-1 space-y-1">
             <Label className="text-xs">Label</Label>
             <Input defaultValue={l.label} onBlur={(e) => e.target.value !== l.label && update(l.id, { label: e.target.value })} />
@@ -246,6 +285,110 @@ function SocialLinksEditor() {
         </div>
       ))}
       <Button variant="outline" size="sm" onClick={add}><Plus className="size-3 mr-1" /> Add link</Button>
+    </Card>
+  );
+}
+
+/* ---------------- Experience ---------------- */
+
+function ExperienceEditor() {
+  const qc = useQueryClient();
+  const { data } = useQuery({ queryKey: ["experiences"], queryFn: fetchExperiences });
+  const entries = data ?? [];
+
+  const add = async () => {
+    const { error } = await supabase.from("experiences").insert({
+      title: "New project",
+      role: "Lead photographer",
+      description: "",
+      year: String(new Date().getFullYear()),
+      sort_order: entries.length + 1,
+    });
+    if (error) toast.error(error.message);
+    else qc.invalidateQueries({ queryKey: ["experiences"] });
+  };
+  const update = async (id: string, patch: any) => {
+    const { error } = await supabase.from("experiences").update(patch).eq("id", id);
+    if (error) toast.error(error.message);
+    else qc.invalidateQueries({ queryKey: ["experiences"] });
+  };
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("experiences").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else qc.invalidateQueries({ queryKey: ["experiences"] });
+  };
+
+  return (
+    <Card className="p-6 space-y-4">
+      {entries.map((e) => (
+        <div key={e.id} className="border border-border rounded p-4 space-y-2">
+          <div className="grid grid-cols-12 gap-2">
+            <div className="col-span-6">
+              <Label className="text-xs">Title</Label>
+              <Input defaultValue={e.title} onBlur={(ev) => ev.target.value !== e.title && update(e.id, { title: ev.target.value })} />
+            </div>
+            <div className="col-span-4">
+              <Label className="text-xs">Role</Label>
+              <Input defaultValue={e.role} onBlur={(ev) => ev.target.value !== e.role && update(e.id, { role: ev.target.value })} />
+            </div>
+            <div className="col-span-2">
+              <Label className="text-xs">Year</Label>
+              <Input defaultValue={e.year} onBlur={(ev) => ev.target.value !== e.year && update(e.id, { year: ev.target.value })} />
+            </div>
+          </div>
+          <div>
+            <Label className="text-xs">Description</Label>
+            <Textarea rows={3} defaultValue={e.description} onBlur={(ev) => ev.target.value !== e.description && update(e.id, { description: ev.target.value })} />
+          </div>
+          <div className="flex justify-end">
+            <Button variant="ghost" size="sm" onClick={() => remove(e.id)}>
+              <Trash2 className="size-4 text-destructive" />
+            </Button>
+          </div>
+        </div>
+      ))}
+      <Button variant="outline" size="sm" onClick={add}><Plus className="size-3 mr-1" /> Add entry</Button>
+    </Card>
+  );
+}
+
+/* ---------------- Reviews ---------------- */
+
+function ReviewsEditor() {
+  const qc = useQueryClient();
+  const { data } = useQuery({ queryKey: ["reviews"], queryFn: fetchReviews });
+  const reviews = data ?? [];
+
+  const remove = async (id: string) => {
+    if (!confirm("Delete this review?")) return;
+    const { error } = await supabase.from("reviews").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Deleted");
+      qc.invalidateQueries({ queryKey: ["reviews"] });
+    }
+  };
+
+  return (
+    <Card className="p-6 space-y-3">
+      {reviews.length === 0 && <p className="text-sm text-muted-foreground">No reviews yet.</p>}
+      {reviews.map((r) => (
+        <div key={r.id} className="border border-border rounded p-4 flex gap-4 items-start">
+          <div className="flex-1">
+            <div className="flex items-baseline gap-3">
+              <span className="font-medium">{r.name}</span>
+              <span className="text-accent text-sm">{"★".repeat(r.rating)}</span>
+              <span className="text-xs text-muted-foreground">
+                {new Date(r.created_at).toLocaleDateString()}
+              </span>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground whitespace-pre-line">{r.message}</p>
+          </div>
+          <Button variant="ghost" size="icon" onClick={() => remove(r.id)}>
+            <Trash2 className="size-4 text-destructive" />
+          </Button>
+        </div>
+      ))}
     </Card>
   );
 }

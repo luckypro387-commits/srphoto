@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      experiences: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          role: string
+          sort_order: number
+          title: string
+          year: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          role?: string
+          sort_order?: number
+          title?: string
+          year?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          role?: string
+          sort_order?: number
+          title?: string
+          year?: string
+        }
+        Relationships: []
+      }
       galleries: {
         Row: {
           cover_url: string
@@ -115,6 +145,30 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          name: string
+          rating: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          name: string
+          rating?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          name?: string
+          rating?: number
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           key: string
@@ -136,6 +190,7 @@ export type Database = {
       social_links: {
         Row: {
           created_at: string
+          icon_url: string
           id: string
           label: string
           sort_order: number
@@ -143,6 +198,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          icon_url?: string
           id?: string
           label: string
           sort_order?: number
@@ -150,6 +206,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          icon_url?: string
           id?: string
           label?: string
           sort_order?: number
