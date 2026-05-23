@@ -86,8 +86,10 @@ function AdminPage() {
 
 const SETTING_FIELDS: { key: string; label: string; type: "text" | "textarea" | "image" }[] = [
   { key: "nav_brand", label: "Navigation brand / name", type: "text" },
+  { key: "nav_logo", label: "Company logo (replaces camera icon in nav)", type: "image" },
   { key: "site_name", label: "Site name", type: "text" },
-  { key: "hero_image", label: "Hero image", type: "image" },
+  { key: "hero_image", label: "Hero background image", type: "image" },
+  { key: "hero_portrait", label: "Hero side image (right side, behind text)", type: "image" },
   { key: "hero_headline", label: "Hero headline", type: "textarea" },
   { key: "hero_eyebrow", label: "Hero subtitle", type: "text" },
   { key: "works_eyebrow", label: "Works section eyebrow", type: "text" },

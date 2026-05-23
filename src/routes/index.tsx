@@ -68,12 +68,16 @@ function Index() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-40 px-6 md:px-10 py-5 flex justify-between items-center bg-background/80 backdrop-blur-md border-b border-border">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center justify-center size-9 border border-accent/60 text-accent">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-4">
-              <path d="M4 7h3l2-2h6l2 2h3v12H4z" />
-              <circle cx="12" cy="13" r="3.5" />
-            </svg>
-          </span>
+          {s.nav_logo ? (
+            <img src={s.nav_logo} alt={s.nav_brand ?? "Logo"} className="size-9 object-contain" />
+          ) : (
+            <span className="inline-flex items-center justify-center size-9 border border-accent/60 text-accent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-4">
+                <path d="M4 7h3l2-2h6l2 2h3v12H4z" />
+                <circle cx="12" cy="13" r="3.5" />
+              </svg>
+            </span>
+          )}
           <div className="leading-tight">
             <div className="font-serif text-lg tracking-[0.18em] uppercase">{s.nav_brand ?? "Studio"}</div>
             <div className="text-[9px] tracking-[0.28em] uppercase text-muted-foreground">{s.hero_eyebrow ?? "Fine Art Editorial"}</div>
@@ -109,6 +113,18 @@ function Index() {
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background" />
         </div>
+
+        {s.hero_portrait && (
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-full md:w-[55%] lg:w-[48%] -z-[5] overflow-hidden">
+            <img
+              src={s.hero_portrait}
+              alt=""
+              className="w-full h-full object-cover object-center opacity-90"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          </div>
+        )}
 
         <div className="max-w-4xl animate-fade-up">
           <div className="inline-flex items-center gap-2 border border-accent/40 bg-accent/5 px-4 py-2 mb-10">
