@@ -260,8 +260,52 @@ function Index() {
         </div>
       </section>
 
+      {/* Experience / Projects */}
+      <section id="experience" className="px-6 md:px-10 py-32 bg-background border-t border-border">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-16">
+            <span className="text-[10px] uppercase tracking-[0.25em] text-accent">
+              {s.experience_eyebrow ?? "Chronicle"}
+            </span>
+            <h2 className="mt-4 font-serif text-4xl md:text-5xl font-normal tracking-tight">
+              {s.experience_title ?? "Projects & Experience"}
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {(experiencesQ.data ?? []).map((x) => (
+              <div
+                key={x.id}
+                className="border border-border p-8 hover:border-accent/60 transition-colors group"
+              >
+                <div className="flex justify-between items-baseline mb-3">
+                  <h3 className="font-serif text-2xl">{x.title}</h3>
+                  <span className="text-[10px] uppercase tracking-[0.25em] text-accent">
+                    {x.year}
+                  </span>
+                </div>
+                <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground mb-4">
+                  {x.role}
+                </p>
+                <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+                  {x.description}
+                </p>
+              </div>
+            ))}
+            {(experiencesQ.data ?? []).length === 0 && (
+              <p className="text-sm text-muted-foreground col-span-full">
+                No experience entries yet — add some from the admin panel.
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Reviews — flowing marquee */}
+      <ReviewsSection reviews={reviewsQ.data ?? []} eyebrow={s.reviews_eyebrow} title={s.reviews_title} />
+
       {/* Contact CTA */}
       <section className="px-6 md:px-8 py-32 bg-background border-t border-border">
+
         <div className="max-w-5xl mx-auto text-center">
           <span className="text-[10px] uppercase tracking-[0.25em] text-accent">
             Ready to create
