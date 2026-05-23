@@ -68,12 +68,16 @@ function Index() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-40 px-6 md:px-10 py-5 flex justify-between items-center bg-background/80 backdrop-blur-md border-b border-border">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center justify-center size-9 border border-accent/60 text-accent">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-4">
-              <path d="M4 7h3l2-2h6l2 2h3v12H4z" />
-              <circle cx="12" cy="13" r="3.5" />
-            </svg>
-          </span>
+          {s.nav_logo ? (
+            <img src={s.nav_logo} alt={s.nav_brand ?? "Logo"} className="size-9 object-contain" />
+          ) : (
+            <span className="inline-flex items-center justify-center size-9 border border-accent/60 text-accent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-4">
+                <path d="M4 7h3l2-2h6l2 2h3v12H4z" />
+                <circle cx="12" cy="13" r="3.5" />
+              </svg>
+            </span>
+          )}
           <div className="leading-tight">
             <div className="font-serif text-lg tracking-[0.18em] uppercase">{s.nav_brand ?? "Studio"}</div>
             <div className="text-[9px] tracking-[0.28em] uppercase text-muted-foreground">{s.hero_eyebrow ?? "Fine Art Editorial"}</div>
