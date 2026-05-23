@@ -383,9 +383,14 @@ function Index() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={l.label}
-                    className="inline-flex items-center justify-center size-10 border border-border text-muted-foreground hover:text-accent hover:border-accent transition-colors"
+                    title={l.label}
+                    className="inline-flex items-center justify-center size-10 border border-border text-muted-foreground hover:text-accent hover:border-accent transition-colors overflow-hidden"
                   >
-                    <span className="text-[10px] uppercase tracking-widest">{l.label.slice(0, 2)}</span>
+                    {l.icon_url ? (
+                      <img src={l.icon_url} alt={l.label} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-[10px] uppercase tracking-widest">{l.label.slice(0, 2)}</span>
+                    )}
                   </a>
                 ))}
               </div>
