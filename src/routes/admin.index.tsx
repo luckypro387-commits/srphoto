@@ -476,6 +476,7 @@ function GalleriesEditor() {
       title: "New Gallery",
       place: "",
       year: "",
+      category: "",
       description: "",
       cover_url: "",
       sort_order: (galleries?.length ?? 0) + 1,
@@ -528,6 +529,7 @@ function GalleryDetail({ gallery, onBack }: { gallery: Gallery; onBack: () => vo
     slug: gallery.slug,
     place: gallery.place,
     year: gallery.year,
+    category: gallery.category ?? "",
     description: gallery.description,
     cover_url: gallery.cover_url,
   });
@@ -611,6 +613,7 @@ function GalleryDetail({ gallery, onBack }: { gallery: Gallery; onBack: () => vo
           <div className="space-y-1"><Label>Slug</Label><Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} /></div>
           <div className="space-y-1"><Label>Place</Label><Input value={form.place} onChange={(e) => setForm({ ...form, place: e.target.value })} /></div>
           <div className="space-y-1"><Label>Year</Label><Input value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} /></div>
+          <div className="space-y-1 md:col-span-2"><Label>Category (filter tag, e.g. Wedding, Maternity)</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Wedding" /></div>
         </div>
         <div className="space-y-1"><Label>Description</Label><Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
         <div className="space-y-2">

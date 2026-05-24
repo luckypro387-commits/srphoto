@@ -9,6 +9,7 @@ export type Gallery = {
   description: string;
   cover_url: string;
   sort_order: number;
+  category: string;
 };
 
 export type GalleryPhoto = {
