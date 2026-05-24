@@ -588,9 +588,9 @@ function WorksSection({
   const [filter, setFilter] = useState<string>("ALL");
 
   const categoryOf = (g: GalleryWithPhotos) =>
-    (g.year || g.place?.split(",")[0] || "Featured").toString().toUpperCase();
+    (g.category || g.year || "Featured").toString().toUpperCase();
 
-  const categories = Array.from(new Set(galleries.map(categoryOf)));
+  const categories = Array.from(new Set(galleries.map(categoryOf).filter(Boolean)));
   const visible = filter === "ALL" ? galleries : galleries.filter((g) => categoryOf(g) === filter);
 
   const renderTitle = (text: string) =>
@@ -622,7 +622,7 @@ function WorksSection({
         </div>
 
         {/* Filter tabs */}
-        {categories.length > 1 && (
+        {categories.length > 0 && (
           <div className="flex flex-wrap justify-center gap-3 mb-16">
             {(["ALL", ...categories] as string[]).map((c) => {
               const active = filter === c;
@@ -643,14 +643,14 @@ function WorksSection({
           </div>
         )}
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Grid — clean image cards with category badge */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {visible.map((g) => (
             <Link
               key={g.id}
               to="/gallery/$slug"
               params={{ slug: g.slug }}
-              className="group block border border-border/60 bg-card overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors hover:border-accent/60"
+              className="group relative block overflow-hidden bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <div className="relative overflow-hidden aspect-[4/5] bg-muted">
                 {g.cover_url && (
@@ -663,44 +663,28 @@ function WorksSection({
                 )}
 
                 {/* Category badge */}
-                <span className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.22em] font-semibold text-accent bg-background/80 backdrop-blur-sm px-3 py-1.5 border border-accent/40">
+                <span className="absolute top-4 right-4 z-10 text-[10px] uppercase tracking-[0.22em] font-semibold text-accent bg-background/85 backdrop-blur-sm px-3 py-1.5 border border-accent/40">
                   {categoryOf(g)}
                 </span>
 
-                {/* Dark hover overlay */}
-                <div className="absolute inset-0 bg-background/0 group-hover:bg-background/55 transition-colors duration-500" />
+                {/* Gradient + info reveal on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                {/* Eye icon reveals on hover */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="inline-flex items-center justify-center size-14 rounded-full bg-accent text-background opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 ease-[var(--ease-out-expo)] shadow-lg">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-6">
-                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </span>
-                </div>
-
-                {/* Hover info slides up */}
                 <div className="absolute inset-x-0 bottom-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-[var(--ease-out-expo)]">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent">
-                    View Gallery →
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent mb-2">
+                    {g.photos.length} Frames · {g.year}
                   </p>
+                  <h3 className="font-serif text-2xl text-foreground italic leading-tight">{g.title}</h3>
+                  {g.place && (
+                    <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-3.5 text-accent">
+                        <path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" />
+                        <circle cx="12" cy="9" r="2.5" />
+                      </svg>
+                      {g.place}
+                    </p>
+                  )}
                 </div>
-              </div>
-
-              {/* Bottom info bar */}
-              <div className="p-5 bg-card">
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                  {g.photos.length} Frames · {g.year}
-                </p>
-                <h3 className="mt-2 font-serif text-xl text-accent italic">{g.title}</h3>
-                <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-3.5 text-accent">
-                    <path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" />
-                    <circle cx="12" cy="9" r="2.5" />
-                  </svg>
-                  {g.place}
-                </p>
               </div>
             </Link>
           ))}
