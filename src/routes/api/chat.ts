@@ -86,7 +86,7 @@ export const Route = createFileRoute("/api/chat")({
 });
 
 async function queueTranscriptEmail(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   sessionId: string,
 ) {
   // Lookup recipient
