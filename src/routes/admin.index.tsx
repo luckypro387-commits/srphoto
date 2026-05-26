@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { resendChatTranscript } from "@/lib/chat-admin.functions";
 import {
   fetchSiteSettings,
   fetchGalleries,
@@ -21,7 +23,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Trash2, Plus, Upload, ArrowLeft, LogOut } from "lucide-react";
+import { Trash2, Plus, Upload, ArrowLeft, LogOut, Mail, Search } from "lucide-react";
+
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({ meta: [{ title: "Admin Panel" }] }),
