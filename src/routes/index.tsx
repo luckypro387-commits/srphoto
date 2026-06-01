@@ -15,6 +15,7 @@ import {
   type GalleryPhoto,
   type Review,
 } from "@/lib/content-queries";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,6 +45,7 @@ function Index() {
   }));
 
   const navigate = useNavigate();
+  useScrollReveal();
   const [ctaActive, setCtaActive] = useState(false);
   const handleCta = () => {
     if (ctaActive) return;
@@ -188,16 +190,18 @@ function Index() {
       {/* Full Index */}
       <section id="archive" className="px-8 py-24 bg-background text-foreground border-t border-border">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-16">
+          <div className="flex justify-between items-end mb-16" data-reveal>
             <h3 className="text-3xl md:text-4xl font-light font-serif">{s.archive_title ?? ""}</h3>
             <span className="text-[10px] tracking-widest text-accent uppercase">
               {s.archive_caption ?? ""}
             </span>
           </div>
           <div className="border-t border-accent/30">
-            {(indexQ.data ?? []).map((e) => (
+            {(indexQ.data ?? []).map((e, i) => (
               <div
                 key={e.id}
+                data-reveal
+                data-reveal-delay={Math.min(i, 4)}
                 className="grid grid-cols-12 py-6 border-b border-accent/20 group cursor-pointer hover:bg-accent/5 transition-colors"
               >
                 <span className="col-span-2 md:col-span-1 text-[10px] self-center text-accent/70">
@@ -222,7 +226,7 @@ function Index() {
       {/* Experience / Projects */}
       <section id="experience" className="px-6 md:px-10 py-32 bg-background border-t border-border">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16">
+          <div className="mb-16" data-reveal>
             <span className="text-[10px] uppercase tracking-[0.25em] text-accent">
               {s.experience_eyebrow ?? "Chronicle"}
             </span>
@@ -231,10 +235,12 @@ function Index() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {(experiencesQ.data ?? []).map((x) => (
+            {(experiencesQ.data ?? []).map((x, i) => (
               <div
                 key={x.id}
-                className="border border-border p-8 hover:border-accent/60 transition-colors group"
+                data-reveal
+                data-reveal-delay={i % 4}
+                className="border border-border p-8 hover:border-accent/60 hover:-translate-y-1 transition-all duration-500 group"
               >
                 <div className="flex justify-between items-baseline mb-3">
                   <h3 className="font-serif text-2xl">{x.title}</h3>
@@ -265,7 +271,7 @@ function Index() {
       {/* Contact CTA */}
       <section className="px-6 md:px-8 py-32 bg-background border-t border-border">
 
-        <div className="max-w-5xl mx-auto text-center">
+        <div className="max-w-5xl mx-auto text-center" data-reveal>
           <span className="text-[10px] uppercase tracking-[0.25em] text-accent">
             Ready to create
           </span>
@@ -653,6 +659,8 @@ function WorksSection({
               key={g.id}
               to="/gallery/$slug"
               params={{ slug: g.slug }}
+              data-reveal
+              data-reveal-delay={i % 4}
               className="group relative block bg-card border border-border hover:border-accent transition-all duration-500 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.4)] hover:shadow-[0_18px_50px_-12px_color-mix(in_oklab,var(--accent)_45%,transparent)] hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <div className="p-3">
