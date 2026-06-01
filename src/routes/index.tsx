@@ -45,6 +45,7 @@ function Index() {
   }));
 
   const navigate = useNavigate();
+  useScrollReveal();
   const [ctaActive, setCtaActive] = useState(false);
   const handleCta = () => {
     if (ctaActive) return;
