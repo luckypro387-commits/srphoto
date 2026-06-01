@@ -15,6 +15,7 @@ import {
   type GalleryPhoto,
   type Review,
 } from "@/lib/content-queries";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
