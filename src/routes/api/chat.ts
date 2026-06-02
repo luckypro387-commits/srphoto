@@ -10,11 +10,32 @@ Help visitors with questions about photography sessions, pricing, availability, 
 Be warm, concise, and professional. If asked about exact prices or specific dates, say the studio will follow up by email
 and encourage them to share their name, email, and what kind of session they're interested in. Keep replies under 120 words.`;
 
+// Best-effort in-memory rate limiter (per-worker instance).
+// Limits abuse of the public chat endpoint without breaking the widget UX.
+const RATE_WINDOW_MS = 60_000;
+const MAX_PER_IP_PER_MIN = 15;
+const MAX_PER_SESSION_PER_MIN = 12;
+const ipHits = new Map<string, number[]>();
+const sessionHits = new Map<string, number[]>();
+
+function hit(map: Map<string, number[]>, key: string, max: number) {
+  const now = Date.now();
+  const arr = (map.get(key) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  arr.push(now);
+  map.set(key, arr);
+  return arr.length > max;
+}
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
+          const ip =
+            request.headers.get("cf-connecting-ip") ||
+            request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+            "unknown";
+
           const body = (await request.json()) as {
             sessionId?: string;
             messages?: Msg[];
@@ -22,12 +43,35 @@ export const Route = createFileRoute("/api/chat")({
             visitorEmail?: string;
           };
           const sessionId = String(body.sessionId || "").slice(0, 80);
-          const messages = Array.isArray(body.messages) ? body.messages.slice(-30) : [];
-          if (sessionId.length < 8 || messages.length === 0) {
+          const rawMessages = Array.isArray(body.messages) ? body.messages.slice(-30) : [];
+
+          // Strict validation
+          if (sessionId.length < 8 || !/^[A-Za-z0-9_-]+$/.test(sessionId)) {
             return new Response("Bad request", { status: 400 });
           }
+          if (rawMessages.length === 0) {
+            return new Response("Bad request", { status: 400 });
+          }
+
+          // Only allow user/assistant roles from the client. Reject anything else
+          // (system, tool, function, etc.) to prevent prompt-injection via role.
+          const messages: Msg[] = [];
+          for (const m of rawMessages) {
+            if (!m || typeof m.content !== "string") continue;
+            if (m.role !== "user" && m.role !== "assistant") continue;
+            const content = m.content.slice(0, 8000);
+            if (!content) continue;
+            messages.push({ role: m.role, content });
+          }
+          if (messages.length === 0) return new Response("Bad request", { status: 400 });
+
           const lastUser = [...messages].reverse().find((m) => m.role === "user");
           if (!lastUser) return new Response("No user message", { status: 400 });
+
+          // Rate limit
+          if (hit(ipHits, ip, MAX_PER_IP_PER_MIN) || hit(sessionHits, sessionId, MAX_PER_SESSION_PER_MIN)) {
+            return new Response("Too many requests", { status: 429 });
+          }
 
           const key = process.env.LOVABLE_API_KEY;
           if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
@@ -55,7 +99,7 @@ export const Route = createFileRoute("/api/chat")({
             content: lastUser.content.slice(0, 8000),
           });
 
-          // Generate AI reply
+          // Generate AI reply. SYSTEM_PROMPT is the authoritative system message.
           const gateway = createLovableAiGatewayProvider(key);
           const { text } = await generateText({
             model: gateway("google/gemini-2.5-flash"),
@@ -70,7 +114,6 @@ export const Route = createFileRoute("/api/chat")({
           });
 
           // Fire-and-forget transcript email after every visitor message.
-          // Will start working once the studio email domain is configured.
           queueTranscriptEmail(supabase, sessionId).catch((err) =>
             console.error("[chat] email queue failed:", err),
           );
@@ -116,12 +159,12 @@ async function queueTranscriptEmail(
       `[${new Date(m.created_at).toLocaleString()}] ${m.role.toUpperCase()}: ${m.content}`,
   );
   const transcript = lines.join("\n\n");
-  const visitor =
-    `Visitor: ${session?.visitor_name || "(unknown)"} <${session?.visitor_email || "n/a"}>`;
+  const visitorName = session?.visitor_name || "(unknown)";
+  const visitorEmail = session?.visitor_email || "n/a";
+  const visitorText = `Visitor: ${visitorName} <${visitorEmail}>`;
   const subject = `New chat message — session ${sessionId.slice(0, 8)}`;
-  const html = `<h2>${subject}</h2><p>${visitor}</p><pre style="white-space:pre-wrap;font-family:ui-monospace,monospace">${escapeHtml(transcript)}</pre>`;
+  const html = `<h2>${escapeHtml(subject)}</h2><p>Visitor: ${escapeHtml(visitorName)} &lt;${escapeHtml(visitorEmail)}&gt;</p><pre style="white-space:pre-wrap;font-family:ui-monospace,monospace">${escapeHtml(transcript)}</pre>`;
 
-  // Try to enqueue via Lovable email infrastructure. Silently skip if not yet set up.
   try {
     await supabase.rpc("enqueue_email" as any, {
       p_queue: "transactional_emails",
@@ -129,7 +172,7 @@ async function queueTranscriptEmail(
         to,
         subject,
         html,
-        text: `${visitor}\n\n${transcript}`,
+        text: `${visitorText}\n\n${transcript}`,
       },
     });
     await supabase
@@ -145,5 +188,7 @@ function escapeHtml(s: string) {
   return s
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
