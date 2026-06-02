@@ -4,7 +4,12 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 function escapeHtml(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 export const resendChatTranscript = createServerFn({ method: "POST" })
@@ -51,9 +56,11 @@ export const resendChatTranscript = createServerFn({ method: "POST" })
         `[${new Date(m.created_at).toLocaleString()}] ${m.role.toUpperCase()}: ${m.content}`,
     );
     const transcript = lines.join("\n\n");
-    const visitor = `Visitor: ${session?.visitor_name || "(unknown)"} <${session?.visitor_email || "n/a"}>`;
+    const visitorName = session?.visitor_name || "(unknown)";
+    const visitorEmail = session?.visitor_email || "n/a";
+    const visitor = `Visitor: ${visitorName} <${visitorEmail}>`;
     const subject = `Chat transcript (resend) — session ${sessionId.slice(0, 8)}`;
-    const html = `<h2>${subject}</h2><p>${visitor}</p><pre style="white-space:pre-wrap;font-family:ui-monospace,monospace">${escapeHtml(transcript)}</pre>`;
+    const html = `<h2>${escapeHtml(subject)}</h2><p>Visitor: ${escapeHtml(visitorName)} &lt;${escapeHtml(visitorEmail)}&gt;</p><pre style="white-space:pre-wrap;font-family:ui-monospace,monospace">${escapeHtml(transcript)}</pre>`;
 
     try {
       await supabaseAdmin.rpc("enqueue_email" as any, {
