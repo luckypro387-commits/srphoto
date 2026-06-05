@@ -109,18 +109,18 @@ function Index() {
 
       {/* Hero */}
       <section className="relative min-h-screen flex flex-col justify-center px-6 md:px-10 pt-32 pb-20">
-        <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 -z-10 overflow-hidden">
           {s.hero_image && (
             <img
               src={s.hero_image}
               alt="Hero"
               width={1920}
               height={1280}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover animate-ken-burns"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-background/20" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/10 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
         </div>
 
         {s.hero_portrait && (
