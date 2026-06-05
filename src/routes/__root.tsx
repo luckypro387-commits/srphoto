@@ -121,9 +121,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <IntroLoader />
       <Outlet />
       <ChatWidget />
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );
 }
+
+function IntroLoader() {
+  const { data } = useQuery({ queryKey: ["site_settings"], queryFn: fetchSiteSettings });
+  return <LoadingScreen logoUrl={data?.nav_logo} brand={data?.nav_brand ?? "S. R. Photo Studio"} />;
+}
+
