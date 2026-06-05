@@ -159,14 +159,14 @@ function Index() {
           <div className="flex flex-wrap gap-4 items-center">
             <Link
               to="/book"
-              className="group inline-flex items-center gap-3 bg-accent text-background px-7 py-4 text-[11px] uppercase tracking-[0.25em] font-semibold hover:brightness-110 transition"
+              className="btn-press group inline-flex items-center gap-3 bg-accent text-background px-7 py-4 text-[11px] uppercase tracking-[0.25em] font-semibold hover:brightness-110 transition"
             >
               Book Your Session
               <span className="transition-transform group-hover:translate-x-1">↳</span>
             </Link>
             <a
               href="#works"
-              className="inline-flex items-center gap-3 border border-foreground/30 text-foreground px-7 py-4 text-[11px] uppercase tracking-[0.25em] font-semibold hover:border-accent hover:text-accent transition"
+              className="btn-press inline-flex items-center gap-3 border border-foreground/30 text-foreground px-7 py-4 text-[11px] uppercase tracking-[0.25em] font-semibold hover:border-accent hover:text-accent transition"
             >
               Explore Portfolio
             </a>
