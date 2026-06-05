@@ -99,8 +99,6 @@
 }
 .animate-float { animation: float-y 6s ease-in-out infinite; }
 
-.animate-float { animation: float-y 6s ease-in-out infinite; }
-
 @keyframes drone-left-to-right {
   0% { transform: translateX(-20vw) translateY(0); opacity: 0; }
   10% { opacity: 0.9; }
@@ -134,6 +132,13 @@
 .btn-press { transition: transform 0.2s var(--ease-out-expo), box-shadow 0.2s; }
 .btn-press:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -12px color-mix(in oklch, var(--accent) 60%, transparent); }
 .btn-press:active { animation: press-pop 0.35s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .animate-marquee, .animate-float, .animate-fade-up,
+  .animate-drone-1, .animate-drone-2, .animate-drone-3,
+  .animate-ken-burns { animation: none !important; }
+}
 
 
 @layer base {
