@@ -1,0 +1,18 @@
+# Netlify deployment config
+# This project is a TanStack Start app that builds to a Cloudflare Worker by default.
+# On Netlify, the static client assets are served from `dist/client` and unknown
+# routes fall back to index.html so the SPA router can handle them.
+# Server functions (createServerFn) and API routes will NOT run on Netlify
+# without additional adapter setup — host on Cloudflare for full functionality.
+
+[build]
+  command = "bun run build"
+  publish = "dist/client"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
