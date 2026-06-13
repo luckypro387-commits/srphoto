@@ -1,0 +1,26 @@
+{
+  "name": "S.R. Photo Studio",
+  "shortName": "SR Photo",
+  "description": "Professional photographer portfolio with customizable galleries and an admin panel.",
+  "version": "1.0.0",
+  "language": "en",
+  "themeColor": "#0F172A",
+  "backgroundColor": "#ffffff",
+  "icons": [
+    { "src": "/favicon.ico", "type": "image/x-icon", "sizes": "any" }
+  ],
+  "routes": [
+    { "path": "/", "title": "Home", "description": "S.R. Photo Studio — portfolio home." },
+    { "path": "/gallery/:slug", "title": "Gallery", "description": "Browse a curated photo gallery.", "dynamic": true },
+    { "path": "/book", "title": "Book a Session", "description": "Book a photography session." },
+    { "path": "/contact", "title": "Contact", "description": "Get in touch with S.R. Photo Studio." },
+    { "path": "/admin/login", "title": "Admin Login", "description": "Admin sign-in.", "private": true },
+    { "path": "/admin", "title": "Admin Dashboard", "description": "Manage site content.", "private": true }
+  ],
+  "build": {
+    "command": "bun run build",
+    "outputDirectory": "dist",
+    "framework": "tanstack-start",
+    "node": ">=20"
+  }
+}

@@ -4,6 +4,10 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/client",
   "rewrites": [
+    { "source": "/assets/:path*", "destination": "/assets/:path*" },
+    { "source": "/favicon.ico", "destination": "/favicon.ico" },
+    { "source": "/index.json", "destination": "/index.json" },
+    { "source": "/_redirects", "destination": "/_redirects" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
